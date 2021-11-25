@@ -1,9 +1,8 @@
 let contract;
-let contractAddress = "0xf7520104d06324B34DB083f5f88599719b225c62";
 
-async function loadContract() {
-    let abi = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"account","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256[]","name":"ids","type":"uint256[]"},{"indexed":false,"internalType":"uint256[]","name":"values","type":"uint256[]"}],"name":"TransferBatch","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"TransferSingle","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"value","type":"string"},{"indexed":true,"internalType":"uint256","name":"id","type":"uint256"}],"name":"URI","type":"event"},{"inputs":[{"internalType":"address","name":"account","type":"address"},{"internalType":"uint256","name":"id","type":"uint256"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address[]","name":"accounts","type":"address[]"},{"internalType":"uint256[]","name":"ids","type":"uint256[]"}],"name":"balanceOfBatch","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256[]","name":"ids","type":"uint256[]"},{"internalType":"uint256[]","name":"amounts","type":"uint256[]"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeBatchTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"uri","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}];
-    contract = new web3.eth.Contract(abi, contractAddress);
+function loadContract() {
+    let abi = [{ "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "account", "type": "address" }, { "indexed": true, "internalType": "address", "name": "operator", "type": "address" }, { "indexed": false, "internalType": "bool", "name": "approved", "type": "bool" }], "name": "ApprovalForAll", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "operator", "type": "address" }, { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256[]", "name": "ids", "type": "uint256[]" }, { "indexed": false, "internalType": "uint256[]", "name": "values", "type": "uint256[]" }], "name": "TransferBatch", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "operator", "type": "address" }, { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "id", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "TransferSingle", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "internalType": "string", "name": "value", "type": "string" }, { "indexed": true, "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "URI", "type": "event" }, { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }, { "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address[]", "name": "accounts", "type": "address[]" }, { "internalType": "uint256[]", "name": "ids", "type": "uint256[]" }], "name": "balanceOfBatch", "outputs": [{ "internalType": "uint256[]", "name": "", "type": "uint256[]" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }, { "internalType": "address", "name": "operator", "type": "address" }], "name": "isApprovedForAll", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256[]", "name": "ids", "type": "uint256[]" }, { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }, { "internalType": "bytes", "name": "data", "type": "bytes" }], "name": "safeBatchTransferFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "bytes", "name": "data", "type": "bytes" }], "name": "safeTransferFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "operator", "type": "address" }, { "internalType": "bool", "name": "approved", "type": "bool" }], "name": "setApprovalForAll", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }], "name": "supportsInterface", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "uri", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }];
+    contract = new web3.eth.Contract(abi, document.getElementById("contract").value);
 }
 
 async function loadWeb3() {
@@ -24,15 +23,106 @@ async function loadWeb3() {
         accountChangedCallback(newAccount);
     });
 
+    ethereum.on('chainChanged', chainChanged);
+
     await loadContract();
 
     accountChangedCallback(web3.eth.defaultAccount);
+    chainChanged(await web3.eth.getChainId());
 }
 
-function accountChangedCallback(newAccount) {
+function init() {
+    document.getElementById("networks").addEventListener("change", networkSelected);
+    document.getElementById("contract").addEventListener("change", contractAddressChanged);
+
+    loadWeb3();
+}
+
+async function accountChangedCallback(newAccount) {
     document.getElementById("metamask-acc").innerHTML = `${newAccount}`;
+}
+
+function chainChanged(chainId) {
+    console.log(`chain changed to ${chainId}`)
+    switch (chainId) {
+        case 1:
+        case "1":
+        case `0x${(1).toString(16)}`: // ethereum
+            document.getElementById("networks").selectedIndex = 0;
+            break;
+        case 246:
+        case "246":
+        case `0x${(246).toString(16)}`: // energyweb
+            document.getElementById("networks").selectedIndex = 1;
+            break;
+        case 3:
+        case "3":
+        case `0x${(3).toString(16)}`: // ropsten
+            document.getElementById("networks").selectedIndex = 2;
+            break;
+        case 4:
+        case "4":
+        case `0x${(4).toString(16)}`: // rinkeby
+            document.getElementById("networks").selectedIndex = 3;
+            break;
+        case 42:
+        case "42":
+        case `0x${(42).toString(16)}`: // kovan
+            document.getElementById("networks").selectedIndex = 4;
+            break;
+        case 5:
+        case "5":
+        case `0x${(5).toString(16)}`: // goerli
+            document.getElementById("networks").selectedIndex = 5;
+            break;
+        case 73799:
+        case "73799":
+        case `0x${(73799).toString(16)}`: // volta
+            document.getElementById("networks").selectedIndex = 6;
+            break;
+        default:
+            console.log(`Unknown network: ${chainId}`);
+            break;
+    }
 
     retrieveTransferEvents();
+}
+
+function networkSelected(event) {
+    switch (event.target.selectedOptions[0].value) {
+        case "ethereum":
+            changeToNetwork(1);
+            break;
+        case "energyweb":
+            changeToNetwork(246);
+            break;
+        case "ropsten":
+            changeToNetwork(3);
+            break;
+        case "rinkeby":
+            changeToNetwork(4);
+            break;
+        case "kovan":
+            changeToNetwork(42);
+            break;
+        case "goerli":
+            changeToNetwork(5);
+            break;
+        case "volta":
+            changeToNetwork(73799);
+            break;
+    }
+}
+
+function changeToNetwork(id) {
+    ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: `0x${(id).toString(16)}` }],
+    });
+}
+
+function contractAddressChanged(event) {
+    loadContract();
 }
 
 function pad(num) {
@@ -42,16 +132,28 @@ function pad(num) {
 async function retrieveTransferEvents() {
     let transferEvents = await contract.getPastEvents('TransferSingle', { fromBlock: 0, toBlock: "latest" });
     console.log(transferEvents);
-    transferEvents.forEach(async (entry) => {
-        let dataUrl = (await contract.methods.uri(entry.returnValues.id).call()).replace("{id}", pad(entry.returnValues.id));
-        console.log(dataUrl);
+
+    let uris = (await Promise.all(transferEvents.map((item) => {
+        return contract.methods.uri(item.returnValues.id).call();
+    }))).map(function (uri, i) {
+        return { uri: uri, id: transferEvents[i].returnValues.id };
+    });
+
+    uris.forEach(async (object) => {
+        let id = object.id;
+        let dataUrl = object.uri.replace("{id}", pad(id));
         fetch(dataUrl)
             .then((res) => res.json())
             .then((data) => {
-                let output = "";
-                console.log(data.image);
-
-                output += `<div class="flex-item-db"><a href=${dataUrl}><img src="${data.image}" </a><h2>${data.name} </h2><p>${data.description} </p>`
+                let output = `
+                <article class="flex-item-db">
+                    <img src="${data.image}">
+                    <a href=${dataUrl}>
+                        <h2>${data.name} </h2>
+                    </a>
+                    <p>${data.description}</p>
+                    <p class="id">#${id}</p>
+                </article>`;
 
                 document.getElementById('output').innerHTML += output;
 
@@ -61,4 +163,4 @@ async function retrieveTransferEvents() {
     });
 }
 
-loadWeb3();
+init();

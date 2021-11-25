@@ -12,14 +12,21 @@
     <nav>
         <a href="https://explorer.energyweb.org" id="walletModal" target="_blank">
             <span class="is-warning" id="metamask-acc"></span>
-          </a>
+        </a>
     </nav>
-    <main>
-        <h1>Claim your NFT</h1>
-        <p>Memories fade but NFT's don't</p>
-        <div class="flex-container-db" id="output">
-        </div>
-    </main>
+    <select id="networks">
+        <option value="ethereum">ETH - Ethereum</option>
+        <option value="energyweb">EWT - Energy Web</option>
+        <option value="ropsten">Ropsten</option>
+        <option value="rinkeby">Rinkeby</option>
+        <option value="kovan">Kovan</option>
+        <option value="goerli">Goerli</option>
+        <option value="volta">Volta</option>
+    </select>
+    <input id="contract" placeholder="Smart contract address" value="0xf7520104d06324B34DB083f5f88599719b225c62"></input>
+    <h1>Memories fade but NFT's don't</h1>
+    <section class="flex-container" id="output">
+    </section>
     <script src="js/index.js"> </script>
 </body>
 
