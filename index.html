@@ -13,10 +13,13 @@
         .flex-container {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
+            margin-left: 5rem;
+            margin-right: 5rem;
         }
 
         article {
-            width: 30%;
+            width: 20rem;
             padding-right: 1%;
             margin-left: 1%;
             position: relative;
@@ -31,21 +34,25 @@
             display: block;
             margin-left: auto;
             margin-right: auto;
+            max-width: 100%;
         }
 
         article .id {
             position: absolute;
             top: 0;
             left: 0;
+            background-color: aquamarine;
+            padding: 2px;
+            padding-left: 10px;
+            padding-right: 10px;
         }
 
         @media (max-width: 800px) {
             .flex-container {
                 flex-direction: column;
-            }
-
-            article {
-                width: 100%;
+                align-items: center;
+                margin-left: 2rem;
+                margin-right: 2rem;
             }
         }
     </style>
@@ -67,7 +74,7 @@
         <option value="volta">Volta</option>
     </select>
     <input id="contract" placeholder="Smart contract address"
-        value="0xf7520104d06324B34DB083f5f88599719b225c62"></input>
+        value="0xc0eE5F176eC4FbFD13cDD746fC62aA91e62F13e1"></input>
     <h1>Memories fade but NFT's don't</h1>
     <section class="flex-container" id="output">
     </section>
@@ -196,7 +203,11 @@
         }
 
         function contractAddressChanged(event) {
+            console.log("Contract address changed!");
+
             loadContract();
+
+            retrieveTransferEvents();
         }
 
         function pad(num) {
@@ -204,6 +215,8 @@
         }
 
         async function retrieveTransferEvents() {
+            document.getElementById('output').innerHTML = "";
+
             // Fetch all previous smart contract 'TransferSingle' events to get a list of all NFTs
             let ids = (await contract.getPastEvents('TransferSingle', { fromBlock: 0, toBlock: "latest" }))
                 .map((event) => event.returnValues.id);
@@ -218,7 +231,20 @@
                 return contract.methods.uri(id).call();
             });
 
-            let uris = (await Promise.all(uriPromises)).map((uri, i) => uri.replace("{id}", pad(ids[i])));
+            let uris = (await Promise.all(uriPromises)).map((uri, i) => uri.replace("{id}", pad(ids[i])).replace("gateway.pinata.cloud", "ipfs.io"));
+
+            // Cleanup uris
+            if (!uris[0].endsWith(".json")) {
+                uris = uris.map((uri, i) => {
+                    if (uri.endsWith("/")) {
+                        return `${uri}${pad(ids[i])}.json`;
+                    } else {
+                        return `${uri}/${pad(ids[i])}.json`;
+                    }
+                });
+            }
+
+            console.log(uris);
 
             // Fetch linked json from ipfs
 
@@ -231,10 +257,9 @@
             });
 
             let dataArray = (await Promise.all(dataPromises)).map(function (data, i) {
+                data.image = data.image.replace("gateway.pinata.cloud", "ipfs.io");
                 return { data: data, uri: uris[i], id: ids[i] };
             });
-
-            console.log(dataArray);
 
             dataArray.forEach(async (object) => {
                 try {
@@ -253,7 +278,7 @@
 
                     document.getElementById('output').innerHTML += output;
                 } catch (error) {
-                    console.error(error);
+                    // console.error(error);
                 }
             });
         }
