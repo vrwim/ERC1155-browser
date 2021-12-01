@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <title>NFT collection</title>
 
     <script src="https://unpkg.com/web3@latest/dist/web3.min.js"></script>
@@ -65,6 +66,7 @@
         </a>
     </nav>
     <select id="networks">
+        <!-- TODO: load from js -->
         <option value="ethereum">ETH - Ethereum</option>
         <option value="energyweb">EWT - Energy Web</option>
         <option value="ropsten">Ropsten</option>
@@ -73,17 +75,66 @@
         <option value="goerli">Goerli</option>
         <option value="volta">Volta</option>
     </select>
-    <input id="contract" placeholder="Smart contract address"
-        value="0xc0eE5F176eC4FbFD13cDD746fC62aA91e62F13e1"></input>
+    <input id="contract" placeholder="Smart contract address" value="0x7326b522c323bB83A3155E6792e1A3458e4D6006">
+    <a href="#" onclick="loadContract();">Load contract</a>
     <h1>Memories fade but NFT's don't</h1>
-    <section class="flex-container" id="output">
-    </section>
+    <main class="flex-container" id="output">
+    </main>
     <script>
         let contract;
 
-        function loadContract() {
-            let abi = [{ "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "account", "type": "address" }, { "indexed": true, "internalType": "address", "name": "operator", "type": "address" }, { "indexed": false, "internalType": "bool", "name": "approved", "type": "bool" }], "name": "ApprovalForAll", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "operator", "type": "address" }, { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256[]", "name": "ids", "type": "uint256[]" }, { "indexed": false, "internalType": "uint256[]", "name": "values", "type": "uint256[]" }], "name": "TransferBatch", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "operator", "type": "address" }, { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "id", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "TransferSingle", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "internalType": "string", "name": "value", "type": "string" }, { "indexed": true, "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "URI", "type": "event" }, { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }, { "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address[]", "name": "accounts", "type": "address[]" }, { "internalType": "uint256[]", "name": "ids", "type": "uint256[]" }], "name": "balanceOfBatch", "outputs": [{ "internalType": "uint256[]", "name": "", "type": "uint256[]" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }, { "internalType": "address", "name": "operator", "type": "address" }], "name": "isApprovedForAll", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256[]", "name": "ids", "type": "uint256[]" }, { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }, { "internalType": "bytes", "name": "data", "type": "bytes" }], "name": "safeBatchTransferFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "bytes", "name": "data", "type": "bytes" }], "name": "safeTransferFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "operator", "type": "address" }, { "internalType": "bool", "name": "approved", "type": "bool" }], "name": "setApprovalForAll", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }], "name": "supportsInterface", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "uri", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }];
-            contract = new web3.eth.Contract(abi, document.getElementById("contract").value);
+        async function loadContract() {
+            let ercs = {
+                erc165: {
+                    abi: [{"inputs":[{"internalType":"bytes4","name":"interfaceID","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],
+                    identifiers: ["0x01ffc9a7"]
+                },
+                erc1155: {
+                    abi: [{ "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "account", "type": "address" }, { "indexed": true, "internalType": "address", "name": "operator", "type": "address" }, { "indexed": false, "internalType": "bool", "name": "approved", "type": "bool" }], "name": "ApprovalForAll", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "operator", "type": "address" }, { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256[]", "name": "ids", "type": "uint256[]" }, { "indexed": false, "internalType": "uint256[]", "name": "values", "type": "uint256[]" }], "name": "TransferBatch", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "operator", "type": "address" }, { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "id", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "TransferSingle", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "internalType": "string", "name": "value", "type": "string" }, { "indexed": true, "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "URI", "type": "event" }, { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }, { "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address[]", "name": "accounts", "type": "address[]" }, { "internalType": "uint256[]", "name": "ids", "type": "uint256[]" }], "name": "balanceOfBatch", "outputs": [{ "internalType": "uint256[]", "name": "", "type": "uint256[]" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }, { "internalType": "address", "name": "operator", "type": "address" }], "name": "isApprovedForAll", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256[]", "name": "ids", "type": "uint256[]" }, { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }, { "internalType": "bytes", "name": "data", "type": "bytes" }], "name": "safeBatchTransferFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "id", "type": "uint256" }, { "internalType": "uint256", "name": "amount", "type": "uint256" }, { "internalType": "bytes", "name": "data", "type": "bytes" }], "name": "safeTransferFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "operator", "type": "address" }, { "internalType": "bool", "name": "approved", "type": "bool" }], "name": "setApprovalForAll", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }], "name": "supportsInterface", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "uri", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }],
+                    identifiers: ["0xd9b67a26", "0x0e89341c"]
+                },
+                erc721: {
+                    abi: [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"operator","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"owner","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"_approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"}],
+                    identifiers: ["0x80ac58cd", "0x5b5e139f"]
+                }
+            };
+
+            let contractAddress = document.getElementById("contract").value
+
+            let contractCode = await web3.eth.getCode(contractAddress);
+
+            if(!contractCode || contractCode == "0x") {
+                console.error("Contract not found");
+                return;
+            }
+
+            let erc165contract = new web3.eth.Contract(ercs.erc165.abi, contractAddress);
+            try {
+                let isErc165compliant = await erc165contract.methods.supportsInterface(ercs.erc165.identifiers[0]).call();
+
+                if(!isErc165compliant) {
+                    console.error("Contract is not ERC-165 compliant");
+                    return;
+                }
+            } catch(err) {
+                console.error("Contract is not ERC-165 compliant");
+                return;
+            }
+
+            let isErc1155compliant = await erc165contract.methods.supportsInterface(ercs.erc1155.identifiers[0]).call() && await erc165contract.methods.supportsInterface(ercs.erc1155.identifiers[1]).call();
+            let isErc721compliant = await erc165contract.methods.supportsInterface(ercs.erc721.identifiers[0]).call() && await erc165contract.methods.supportsInterface(ercs.erc721.identifiers[1]).call();
+
+            if(isErc721compliant) {
+                console.log("Contract is ERC-721");
+                contract = new web3.eth.Contract(ercs.erc721.abi, contractAddress);
+                retrieveERC721TransferEvents();
+            } else if(isErc1155compliant) {
+                console.log("Contract is ERC-1155");
+                contract = new web3.eth.Contract(ercs.erc1155.abi, contractAddress);
+                retrieveERC1155TransferEvents();
+            } else {
+                console.error("Contract is unknown token standard");
+            }
         }
 
         async function loadWeb3() {
@@ -106,15 +157,12 @@
 
             ethereum.on('chainChanged', chainChanged);
 
-            await loadContract();
-
             accountChangedCallback(web3.eth.defaultAccount);
             chainChanged(await web3.eth.getChainId());
         }
 
         function init() {
             document.getElementById("networks").addEventListener("change", networkSelected);
-            document.getElementById("contract").addEventListener("change", contractAddressChanged);
 
             loadWeb3();
         }
@@ -165,8 +213,6 @@
                     console.log(`Unknown network: ${chainId}`);
                     break;
             }
-
-            retrieveTransferEvents();
         }
 
         function networkSelected(event) {
@@ -202,23 +248,19 @@
             });
         }
 
-        function contractAddressChanged(event) {
-            console.log("Contract address changed!");
-
-            loadContract();
-
-            retrieveTransferEvents();
-        }
-
         function pad(num) {
-            return num.toString(16).padStart(64, 0);
+            return Math.abs(num).toString(16).padStart(64, 0);
         }
 
-        async function retrieveTransferEvents() {
+        function cleanupIPFSLink(uri) {
+            return uri.replace("gateway.pinata.cloud", "ipfs.io").replace("ipfs://", "https://ipfs.io/ipfs/");
+        }
+
+        async function retrieveERC1155TransferEvents() {
             document.getElementById('output').innerHTML = "";
 
             // Fetch all previous smart contract 'TransferSingle' events to get a list of all NFTs
-            let ids = (await contract.getPastEvents('TransferSingle', { fromBlock: 0, toBlock: "latest" }))
+            let ids = (await contract.getPastEvents('TransferSingle', { fromBlock: "earliest", toBlock: "latest" }))
                 .map((event) => event.returnValues.id);
 
             // Make unique
@@ -231,18 +273,23 @@
                 return contract.methods.uri(id).call();
             });
 
-            let uris = (await Promise.all(uriPromises)).map((uri, i) => uri.replace("{id}", pad(ids[i])).replace("gateway.pinata.cloud", "ipfs.io"));
+            let uris = (await Promise.all(uriPromises)).map((uri, i) => {
+                return uri.replace("{id}", pad(ids[i]))
+            });
 
             // Cleanup uris
-            if (!uris[0].endsWith(".json")) {
-                uris = uris.map((uri, i) => {
+            uris = uris.map((uri, i) => {
+                uri = cleanupIPFSLink(uri);
+                if (uri.endsWith(".json")) {
+                    return uri;
+                } else {
                     if (uri.endsWith("/")) {
                         return `${uri}${pad(ids[i])}.json`;
                     } else {
                         return `${uri}/${pad(ids[i])}.json`;
                     }
-                });
-            }
+                }
+            });
 
             console.log(uris);
 
@@ -257,9 +304,113 @@
             });
 
             let dataArray = (await Promise.all(dataPromises)).map(function (data, i) {
-                data.image = data.image.replace("gateway.pinata.cloud", "ipfs.io");
+                if(!data) {
+                    return data;
+                }
+                if(data.properties && data.properties.schema) {
+                    return undefined;
+                }
+                if(data.image) {
+                    data.image = cleanupIPFSLink(data.image);
+                }
                 return { data: data, uri: uris[i], id: ids[i] };
             });
+
+            dataArray.forEach(async (object) => {
+                try {
+                    let id = object.id;
+                    let dataUrl = object.uri.replace("{id}", pad(id));
+                    let data = object.data;
+                    let output = `
+                <article class="flex-item-db">
+                    <img src="${data.image}">
+                    <a href=${dataUrl}>
+                        <h2>${data.name} </h2>
+                    </a>
+                    <p>${data.description}</p>
+                    <p class="id">#${id}</p>
+                </article>`;
+
+                    document.getElementById('output').innerHTML += output;
+                } catch (error) {
+                    // console.error(error);
+                }
+            });
+        }
+
+        async function retrieveERC721TransferEvents() {
+            document.getElementById('output').innerHTML = "";
+
+            // Fetch all previous smart contract 'Transfer' events to get a list of all NFTs
+            let ids = (await contract.getPastEvents('Transfer', { fromBlock: "earliest", toBlock: "latest" }))
+                .map((event) => event.returnValues.tokenId);
+
+            // Make unique
+            var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+            ids = [...new Set(ids)].sort(collator.compare);
+
+            // Check if ids are still in use (not burned)
+            let ownerPromises = ids.map((id) => {
+                return contract.methods.ownerOf(id).call().catch((err) => {});
+            });
+
+            let owners = await Promise.all(ownerPromises);
+
+            ids = ids.filter((id, i) => {
+                if(!owners[i]) {
+                    return false;
+                }
+                if(owners[i] == "0x0000000000000000000000000000000000000000") {
+                    return false;
+                }
+                return true;
+            });
+
+            // Fetch ipfs uris from smart contract
+            let uriPromises = ids.map((id) => {
+                return contract.methods.tokenURI(id).call();
+            });
+
+            let uris = (await Promise.all(uriPromises))
+                .map((uri, i) => uri.replace("{id}", pad(ids[i])))
+                .map((uri, i) => uri.replace("{0}", pad(ids[i])));
+
+            // Cleanup uris
+            uris = uris.map((uri, i) => {
+                uri = cleanupIPFSLink(uri);
+                if (uri.endsWith(".json") || !uri.endsWith("/")) {
+                    return uri;
+                } else {
+                    if (uri.endsWith("/")) {
+                        return `${uri}${pad(ids[i])}.json`;
+                    } else {
+                        return `${uri}/${pad(ids[i])}.json`;
+                    }
+                }
+            });
+
+            // Fetch linked json from ipfs
+
+            let dataPromises = uris.map((uri) => {
+                return fetch(uri)
+                    .then((res) => res.json())
+                    .catch((error) => {
+                        console.error(`JSON could not be parsed! (${error})`);
+                    });
+            });
+
+            let dataArray = (await Promise.all(dataPromises)).map(function (data, i) {
+                if(!data) {
+                    return undefined;
+                }
+                if(data.properties && data.properties.schema) {
+                    return undefined;
+                }
+                if(data.image) {
+                    data.image = cleanupIPFSLink(data.image);
+                }
+                return { data: data, uri: uris[i], id: ids[i] };
+            }).filter((data) => data != undefined);
 
             dataArray.forEach(async (object) => {
                 try {
