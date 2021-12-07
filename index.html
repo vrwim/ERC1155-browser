@@ -65,6 +65,7 @@
             <span class="is-warning" id="metamask-acc"></span>
         </a>
     </nav>
+    <h1>Memories fade but NFT's don't</h1>
     <select id="networks">
         <!-- TODO: load from js -->
         <option value="ethereum">ETH - Ethereum</option>
@@ -75,18 +76,40 @@
         <option value="goerli">Goerli</option>
         <option value="volta">Volta</option>
     </select>
-    <input id="contract" placeholder="Smart contract address" value="0x7326b522c323bB83A3155E6792e1A3458e4D6006">
+    <br>
+    <input id="contract" placeholder="Smart contract address" value="0xc0eE5F176eC4FbFD13cDD746fC62aA91e62F13e1">
+    <br>
+    <input type="checkbox" id="compliant"><label for="compliant">ERC compliant, skip checks (if you don't see anything, this should probably be unchecked)</label>
+    <br>
     <a href="#" onclick="loadContract();">Load contract</a>
-    <h1>Memories fade but NFT's don't</h1>
+    <h2>Status:</h2>
+    <p id="status"></p>
+    <h2>Current operation:</h2>
+    <p id="operation"></p>
     <main class="flex-container" id="output">
     </main>
     <script>
         let contract;
 
+        function addStatus(str) {
+            document.getElementById("status").innerHTML += str + "<br>";
+        }
+
+        function error(str) {
+            document.getElementById("status").innerHTML += `<span style="color:red;">${str}</span>`;
+        }
+
+        function setOperation(str) {
+            document.getElementById("operation").innerHTML = str;
+        }
+
         async function loadContract() {
+            document.getElementById("status").innerHTML = "";
+            setOperation("Checking NFT type");
+
             let ercs = {
                 erc165: {
-                    abi: [{"inputs":[{"internalType":"bytes4","name":"interfaceID","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],
+                    abi: [{ "inputs": [{ "internalType": "bytes4", "name": "interfaceID", "type": "bytes4" }], "name": "supportsInterface", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }],
                     identifiers: ["0x01ffc9a7"]
                 },
                 erc1155: {
@@ -94,7 +117,7 @@
                     identifiers: ["0xd9b67a26", "0x0e89341c"]
                 },
                 erc721: {
-                    abi: [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"operator","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"owner","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"_approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"}],
+                    abi: [{ "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "owner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "approved", "type": "address" }, { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" }], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "owner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "operator", "type": "address" }, { "indexed": false, "internalType": "bool", "name": "approved", "type": "bool" }], "name": "ApprovalForAll", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" }], "name": "Transfer", "type": "event" }, { "inputs": [{ "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "tokenId", "type": "uint256" }], "name": "approve", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "balance", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }], "name": "getApproved", "outputs": [{ "internalType": "address", "name": "operator", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }, { "internalType": "address", "name": "operator", "type": "address" }], "name": "isApprovedForAll", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "name", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }], "name": "ownerOf", "outputs": [{ "internalType": "address", "name": "owner", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "tokenId", "type": "uint256" }], "name": "safeTransferFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "tokenId", "type": "uint256" }, { "internalType": "bytes", "name": "data", "type": "bytes" }], "name": "safeTransferFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "operator", "type": "address" }, { "internalType": "bool", "name": "_approved", "type": "bool" }], "name": "setApprovalForAll", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }], "name": "supportsInterface", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "symbol", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }], "name": "tokenURI", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "tokenId", "type": "uint256" }], "name": "transferFrom", "outputs": [], "stateMutability": "nonpayable", "type": "function" }],
                     identifiers: ["0x80ac58cd", "0x5b5e139f"]
                 }
             };
@@ -103,8 +126,8 @@
 
             let contractCode = await web3.eth.getCode(contractAddress);
 
-            if(!contractCode || contractCode == "0x") {
-                console.error("Contract not found");
+            if (!contractCode || contractCode == "0x") {
+                error("Contract not found");
                 return;
             }
 
@@ -112,28 +135,28 @@
             try {
                 let isErc165compliant = await erc165contract.methods.supportsInterface(ercs.erc165.identifiers[0]).call();
 
-                if(!isErc165compliant) {
-                    console.error("Contract is not ERC-165 compliant");
+                if (!isErc165compliant) {
+                    error("Contract is not ERC-165 compliant");
                     return;
                 }
-            } catch(err) {
-                console.error("Contract is not ERC-165 compliant");
+            } catch (err) {
+                error("Contract is not ERC-165 compliant");
                 return;
             }
 
             let isErc1155compliant = await erc165contract.methods.supportsInterface(ercs.erc1155.identifiers[0]).call() && await erc165contract.methods.supportsInterface(ercs.erc1155.identifiers[1]).call();
             let isErc721compliant = await erc165contract.methods.supportsInterface(ercs.erc721.identifiers[0]).call() && await erc165contract.methods.supportsInterface(ercs.erc721.identifiers[1]).call();
 
-            if(isErc721compliant) {
-                console.log("Contract is ERC-721");
+            if (isErc721compliant) {
+                addStatus("Contract is ERC-721");
                 contract = new web3.eth.Contract(ercs.erc721.abi, contractAddress);
                 retrieveERC721TransferEvents();
-            } else if(isErc1155compliant) {
-                console.log("Contract is ERC-1155");
+            } else if (isErc1155compliant) {
+                addStatus("Contract is ERC-1155");
                 contract = new web3.eth.Contract(ercs.erc1155.abi, contractAddress);
                 retrieveERC1155TransferEvents();
             } else {
-                console.error("Contract is unknown token standard");
+                error("Contract is unknown token standard");
             }
         }
 
@@ -248,78 +271,194 @@
             });
         }
 
-        function pad(num) {
-            return Math.abs(num).toString(16).padStart(64, 0);
+        function pad(num, base) {
+            return Math.abs(num).toString(base).padStart(64, 0);
         }
 
-        function cleanupIPFSLink(uri) {
+        function toIpfsIoLink(uri) {
             return uri.replace("gateway.pinata.cloud", "ipfs.io").replace("ipfs://", "https://ipfs.io/ipfs/");
         }
 
-        async function retrieveERC1155TransferEvents() {
+        function addIdToUri(uri, id, urisAreAFolder) {
+            if (urisAreAFolder) {
+                if (uri.endsWith("/")) {
+                    return `${uri}${id}.json`;
+                } else {
+                    return `${uri}/${id}.json`;
+                }
+            }
+
+            return uri.replace("{id}", id).replace("{0}", id);
+        }
+
+        async function detectBase(uris, ids, urisAreAFolder) {
+            // Find an item that has a hex id containing a-f, so we can use it to test
+            let id = ids.find((item) => {
+                return Math.abs(item).toString(16).match(/[A-Fa-f]/g)
+            });
+
+            if (!id) {
+                // If no value can be found to test hex or dec, it doesn't matter, run the test anyway to detect if folder or not
+                id = ids[0];
+            }
+
+            /// Index of the id to be tested
+            let index = ids.indexOf(id);
+
+            /// Padded ids in different bases
+            let idInHex = pad(id, 16);
+            let idInDec = pad(id, 10);
+
+            /// The uri to be tested
+            let uri = uris[index];
+
+            // The resulting hex & dec uris
+            let decUri = addIdToUri(uri, idInDec, urisAreAFolder);
+            let hexUri = addIdToUri(uri, idInHex, urisAreAFolder);
+
+            let hexOrDecResponses = await Promise.all(
+                [
+                    fetch(hexUri),
+                    fetch(decUri),
+                ]
+            );
+
+            if (hexOrDecResponses[0].ok) {
+                console.log("Item exists in hex");
+                return 16; // Item exists in hex
+            }
+
+            if (hexOrDecResponses[1].ok) {
+                console.log("Item exists in dec");
+                return 10; // Item does not exist in hex, but exists in dec, so it's hex
+            }
+
+            console.error("fetch to test hex or dec failed?");
+            return 16;
+        }
+
+        async function checkIfUrisAreAFolder(uris, ids) {
+            let allUrisAreEqual = uris.every((val, i, arr) => val === arr[0]);
+
+            if (!allUrisAreEqual) {
+                // Assume a folder is returned only for all items
+                return false;
+            }
+            let uri = uris[0];
+            let id = ids[0];
+
+            let idInHex = pad(id, 16);
+            let idInDec = pad(id, 10);
+
+            if (!uri.endsWith("/")) {
+                uri = `${uri}/`;
+            }
+
+            let responses = await Promise.all([
+                fetch(`${uri}${idInHex}.json`),
+                fetch(`${uri}${idInDec}.json`)
+            ]);
+
+            let isAFolder = responses[0].ok || responses[1].ok;
+
+            if(isAFolder) {
+                addStatus("The uri is a folder");
+            }
+
+            // If the first id returns a valid uri for either hex or dec, assume it's a folder
+            return isAFolder;
+        }
+
+        async function retrieveTransferEvents(eventName, eventIdKey, uriMethod) {
             document.getElementById('output').innerHTML = "";
 
+            let compliant = document.getElementById("compliant").checked;
+
+            setOperation("Loading all transfer events");
+
             // Fetch all previous smart contract 'TransferSingle' events to get a list of all NFTs
-            let ids = (await contract.getPastEvents('TransferSingle', { fromBlock: "earliest", toBlock: "latest" }))
-                .map((event) => event.returnValues.id);
+            let ids = (await contract.getPastEvents(eventName, { fromBlock: "earliest", toBlock: "latest" }))
+                .map((event) => event.returnValues[eventIdKey]);
 
             // Make unique
             var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
             ids = [...new Set(ids)].sort(collator.compare);
 
-            // Fetch ipfs uris from smart contract
+            // Check if ids are still in use (not burned); Only possible for ERC-721
+            if (contract.methods.ownerOf) {
+                let ownerPromises = ids.map((id) => {
+                    return contract.methods.ownerOf(id).call().catch((err) => { });
+                });
 
-            let uriPromises = ids.map((id) => {
-                return contract.methods.uri(id).call();
-            });
-
-            let uris = (await Promise.all(uriPromises)).map((uri, i) => {
-                return uri.replace("{id}", pad(ids[i]))
-            });
-
-            // Cleanup uris
-            uris = uris.map((uri, i) => {
-                uri = cleanupIPFSLink(uri);
-                if (uri.endsWith(".json")) {
-                    return uri;
-                } else {
-                    if (uri.endsWith("/")) {
-                        return `${uri}${pad(ids[i])}.json`;
-                    } else {
-                        return `${uri}/${pad(ids[i])}.json`;
+                let owners = await Promise.all(ownerPromises);
+                ids = ids.filter((id, i) => {
+                    if (!owners[i]) {
+                        return false;
                     }
-                }
+                    if (owners[i] == "0x0000000000000000000000000000000000000000") {
+                        return false;
+                    }
+                    return true;
+                });
+            }
+
+            addStatus(`Found ${ids.length} NFTs`);
+
+            setOperation("fetching the URI for each id");
+
+            // Fetch ipfs uris from smart contract
+            let uriPromises = ids.map((id) => {
+                return contract.methods[uriMethod](id).call();
             });
 
-            console.log(uris);
+            setOperation("Fetching JSONs");
+
+            let uris = (await Promise.all(uriPromises)).map(toIpfsIoLink);
+
+if(!compliant) {
+    addStatus("Performing checks, if you know your smart contract is compliant, please check the box");
+}
+
+            let urisAreAFolder = compliant ? false : await checkIfUrisAreAFolder(uris, ids);
+
+            let base = compliant ? 16 : await detectBase(uris, ids, urisAreAFolder);
+
+            uris = uris.map((uri, i) => {
+                return addIdToUri(uri, pad(ids[i], base), urisAreAFolder);
+            });
 
             // Fetch linked json from ipfs
-
             let dataPromises = uris.map((uri) => {
                 return fetch(uri)
-                    .then((res) => res.json())
+                    .then((res) => {
+                        return res.json();
+                    })
                     .catch((error) => {
                         console.error(`JSON could not be parsed! (${error})`);
                     });
             });
 
             let dataArray = (await Promise.all(dataPromises)).map(function (data, i) {
-                if(!data) {
+                // If we don't get an object, skip
+                if (!data) {
+                    console.error(`Data is unavailable for ${uris[i]}`);
                     return data;
                 }
-                if(data.properties && data.properties.schema) {
-                    return undefined;
+                // Some contracts have a root json, shouldn't be in this list, but I've come accross it
+                if (data.properties && data.properties.schema) {
+                    console.error("Data has a schema");
+                    return data;
                 }
-                if(data.image) {
-                    data.image = cleanupIPFSLink(data.image);
+                if (data.image) {
+                    data.image = toIpfsIoLink(data.image);
                 }
                 return { data: data, uri: uris[i], id: ids[i] };
             });
 
-            dataArray.forEach(async (object) => {
+            dataArray.forEach((object) => {
                 try {
                     let id = object.id;
-                    let dataUrl = object.uri.replace("{id}", pad(id));
+                    let dataUrl = object.uri; // TODO: is necessary? .replace("{id}", pad(id));
                     let data = object.data;
                     let output = `
                 <article class="flex-item-db">
@@ -333,105 +472,19 @@
 
                     document.getElementById('output').innerHTML += output;
                 } catch (error) {
-                    // console.error(error);
+                    console.error(`JSON not in the right format: ${object}`);
                 }
             });
+
+            setOperation("Done!");
+        }
+
+        async function retrieveERC1155TransferEvents() {
+            await retrieveTransferEvents("TransferSingle", "id", "uri");
         }
 
         async function retrieveERC721TransferEvents() {
-            document.getElementById('output').innerHTML = "";
-
-            // Fetch all previous smart contract 'Transfer' events to get a list of all NFTs
-            let ids = (await contract.getPastEvents('Transfer', { fromBlock: "earliest", toBlock: "latest" }))
-                .map((event) => event.returnValues.tokenId);
-
-            // Make unique
-            var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
-            ids = [...new Set(ids)].sort(collator.compare);
-
-            // Check if ids are still in use (not burned)
-            let ownerPromises = ids.map((id) => {
-                return contract.methods.ownerOf(id).call().catch((err) => {});
-            });
-
-            let owners = await Promise.all(ownerPromises);
-
-            ids = ids.filter((id, i) => {
-                if(!owners[i]) {
-                    return false;
-                }
-                if(owners[i] == "0x0000000000000000000000000000000000000000") {
-                    return false;
-                }
-                return true;
-            });
-
-            // Fetch ipfs uris from smart contract
-            let uriPromises = ids.map((id) => {
-                return contract.methods.tokenURI(id).call();
-            });
-
-            let uris = (await Promise.all(uriPromises))
-                .map((uri, i) => uri.replace("{id}", pad(ids[i])))
-                .map((uri, i) => uri.replace("{0}", pad(ids[i])));
-
-            // Cleanup uris
-            uris = uris.map((uri, i) => {
-                uri = cleanupIPFSLink(uri);
-                if (uri.endsWith(".json") || !uri.endsWith("/")) {
-                    return uri;
-                } else {
-                    if (uri.endsWith("/")) {
-                        return `${uri}${pad(ids[i])}.json`;
-                    } else {
-                        return `${uri}/${pad(ids[i])}.json`;
-                    }
-                }
-            });
-
-            // Fetch linked json from ipfs
-
-            let dataPromises = uris.map((uri) => {
-                return fetch(uri)
-                    .then((res) => res.json())
-                    .catch((error) => {
-                        console.error(`JSON could not be parsed! (${error})`);
-                    });
-            });
-
-            let dataArray = (await Promise.all(dataPromises)).map(function (data, i) {
-                if(!data) {
-                    return undefined;
-                }
-                if(data.properties && data.properties.schema) {
-                    return undefined;
-                }
-                if(data.image) {
-                    data.image = cleanupIPFSLink(data.image);
-                }
-                return { data: data, uri: uris[i], id: ids[i] };
-            }).filter((data) => data != undefined);
-
-            dataArray.forEach(async (object) => {
-                try {
-                    let id = object.id;
-                    let dataUrl = object.uri.replace("{id}", pad(id));
-                    let data = object.data;
-                    let output = `
-                <article class="flex-item-db">
-                    <img src="${data.image}">
-                    <a href=${dataUrl}>
-                        <h2>${data.name} </h2>
-                    </a>
-                    <p>${data.description}</p>
-                    <p class="id">#${id}</p>
-                </article>`;
-
-                    document.getElementById('output').innerHTML += output;
-                } catch (error) {
-                    // console.error(error);
-                }
-            });
+            await retrieveTransferEvents("Transfer", "tokenId", "tokenURI");
         }
 
         init();
